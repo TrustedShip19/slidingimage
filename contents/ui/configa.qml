@@ -1,121 +1,117 @@
-import QtQuick 2.0
-import QtQuick.Controls 1.0
-import QtQuick.Layouts 1.0
-import org.kde.plasma.core 2.0 as PlasmaCore
-import org.kde.plasma.components 2.0 as PlasmaComponents
-import org.kde.plasma.extras 2.0 as PlasmaExtras
-import org.kde.plasma.plasmoid 2.0
-import QtQuick.Dialogs 1.0
+import QtQuick
+import QtQuick.Controls as QQC2
+import QtQuick.Layouts
+import QtQuick.Dialogs
+import org.kde.kirigami as Kirigami
+import org.kde.kcmutils as KCM
 
-Item {
-	id: page
-	property alias cfg_tamano: slide.value
-	property alias cfg_dirsource: imagedir.text
-	property alias cfg_wichsource:  fromdistro.checked
-	property alias cfg_usedistro:  distros.checked
-	property alias cfg_usephoto:  photos.checked
-	
-	Component.onCompleted:{
-//         fromdistro.checked = plasmoid.configuration.wichsource == 0?true:false
-        fromadir.checked = fromdistro.checked?false:true
-    }
-	
-	ColumnLayout {
-		    
-	    
-		Label{
-			text:"Size: "+slide.value+"x"+slide.value
-		}
-		RowLayout {
-			Label{
-				text:"2x2"
-			}
-			Slider {
-				id: slide
-				minimumValue: 2
-				maximumValue: 9
-				stepSize: 1
-				tickmarksEnabled: true
-			}
-			Label{
-				text:"9x9"
-			}
-		}
-		
-		ColumnLayout{
-            ExclusiveGroup { id: tabPositionGroup }
-            Label{text: "Random image:"}
-            RadioButton {
-                id: fromdistro
-                text: "Predefined images"
-//                 checked: true
-                exclusiveGroup: tabPositionGroup
-            }
-            ColumnLayout {
-                Layout.leftMargin: 20
-                CheckBox {
-                    id:distros
-                    text: qsTr("Distros logos")
-                    enabled: fromdistro.checked
-//                     checked: true
-                    onCheckedChanged:{if(!distros.checked && !photos.checked){checked=true}}
-                }
-                CheckBox {
-                    id:photos
-                    text: qsTr("Photos")
-                    enabled: fromdistro.checked
-                    onCheckedChanged:{if(!distros.checked && !photos.checked){distros.checked=true}}
-                }
-            }
-            RadioButton {
-                id: fromadir
-                text: "From a directory"
-//                 checked: false
-                exclusiveGroup: tabPositionGroup
-            }
-            RowLayout {
-                TextField{
-                    id: imagedir
-                    Layout.fillWidth: true
-                    //width:1600
-                    placeholderText: qsTr("Choose a directory with images")
-                    //text: fileDialog.fileUrl
-                    //text : (logos.indexOf(plasmoid.configuration.imagenbackground) >= 0)?"":plasmoid.configuration.imagenbackground
-                    visible: fromadir.checked
-                    //onTextChanged: imagenes.imagen = imageother.text
-                    Component.onCompleted:{
-                        text = plasmoid.configuration.dirsource
+KCM.SimpleKCM {
+    id: page
 
-                    }
-                }
-                Button {
-                    //QtLayouts.Layout.fillWidth: true
-                    text: "..."
-                    visible: fromadir.checked
-                    //width: 10
-                    //visible: (imagenes.currentText == "Other...")?true:false
-                    onClicked: {fileDialog.visible = true;}
-                }
-            }
-                
-            
+    property alias cfg_tamano: sizeSlider.value
+    property alias cfg_dirsource: imagedir.text
+    property alias cfg_wichsource: fromPredefined.checked
+    property alias cfg_usedistro: distros.checked
+    property alias cfg_usephoto: photos.checked
+
+    Kirigami.FormLayout {
+        anchors.fill: parent
+
+        // Size slider
+        QQC2.Label {
+            Kirigami.FormData.label: i18n("Puzzle size:")
+            text: sizeSlider.value + "×" + sizeSlider.value
         }
-	}
-	
-	 FileDialog {
-        id: fileDialog
-        title: "Please choose directory with images"
-        folder: shortcuts.home
-        selectFolder : true
-        //nameFilters: [ "Image files (*.jpg *.png *.svg)", "All files (*)" ]
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Size")
+            Layout.fillWidth: true
+
+            QQC2.Label { text: "2×2" }
+
+            QQC2.Slider {
+                id: sizeSlider
+                from: 2
+                to: 9
+                stepSize: 1
+                Layout.fillWidth: true
+            }
+
+            QQC2.Label { text: "9×9" }
+        }
+
+        // Image source selection
+        QQC2.ButtonGroup { id: sourceGroup }
+
+        QQC2.RadioButton {
+            id: fromPredefined
+            Kirigami.FormData.label: i18n("Image source:")
+            text: i18n("Predefined images")
+            QQC2.ButtonGroup.group: sourceGroup
+            checked: true
+        }
+
+        ColumnLayout {
+            Layout.leftMargin: Kirigami.Units.gridUnit * 2
+            spacing: Kirigami.Units.smallSpacing
+
+            QQC2.CheckBox {
+                id: distros
+                text: i18n("Distro logos")
+                enabled: fromPredefined.checked
+                onCheckedChanged: {
+                    if (!checked && !photos.checked)
+                        checked = true
+                }
+            }
+
+            QQC2.CheckBox {
+                id: photos
+                text: i18n("Photos")
+                enabled: fromPredefined.checked
+                onCheckedChanged: {
+                    if (!checked && !distros.checked)
+                        distros.checked = true
+                }
+            }
+        }
+
+        QQC2.RadioButton {
+            id: fromDirectory
+            text: i18n("From a directory")
+            QQC2.ButtonGroup.group: sourceGroup
+            checked: !fromPredefined.checked
+            onCheckedChanged: {
+                if (checked)
+                    fromPredefined.checked = false
+            }
+        }
+
+        RowLayout {
+            visible: fromDirectory.checked
+            Layout.fillWidth: true
+
+            QQC2.TextField {
+                id: imagedir
+                Layout.fillWidth: true
+                placeholderText: i18n("Choose a directory with images")
+            }
+
+            QQC2.Button {
+                text: "…"
+                onClicked: folderDialog.open()
+            }
+        }
+    }
+
+    FolderDialog {
+        id: folderDialog
+        title: i18n("Please choose a directory with images")
+        currentFolder: StandardPaths.writableLocation(StandardPaths.HomeLocation)
+
         onAccepted: {
-            imagedir.text = fileUrl.toString().replace(/^(file:\/{2})/,"");
-            Qt.quit()
+            // Remove the "file://" prefix
+            imagedir.text = selectedFolder.toString().replace(/^file:\/\//, "")
         }
-        onRejected: {
-            Qt.quit()
-        }
-        //Component.onCompleted: visible = true
     }
-
 }

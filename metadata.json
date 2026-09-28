@@ -1,0 +1,19 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Vlad"
+            }
+        ],
+        "Category": "Games",
+        "Description": "Puzzle of sliding blocks using random images",
+        "Icon": "applications-games",
+        "Id": "org.kde.slidingimage",
+        "License": "GPL-2.0+",
+        "Name": "Sliding Image Puzzle",
+        "Version": "1.1",
+        "Website": "https://github.com/thevladsoft/slidingimage"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

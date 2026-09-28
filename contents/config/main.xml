@@ -3,24 +3,24 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
       http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
-  <kcfgfile name=""/>
+    <kcfgfile name=""/>
 
-  <group name="General">
-    <entry name="tamano" type="Int">
-        <default>4</default>
-    </entry>
-    <entry name="wichsource" type="bool">
-        <default>true</default>
-    </entry>
-    <entry name="usedistro" type="bool">
-        <default>true</default>
-    </entry>
-    <entry name="usephotp" type="bool">
-        <default>true</default>
-    </entry>
-    <entry name="dirsource" type="String">
-        <default> </default>
-    </entry>
-  </group>
+    <group name="General">
+        <entry name="tamano" type="Int">
+            <default>4</default>
+        </entry>
+        <entry name="wichsource" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="usedistro" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="usephoto" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="dirsource" type="String">
+            <default></default>
+        </entry>
+    </group>
 
 </kcfg>
